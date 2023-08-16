@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: nginx
+  name: nginx1
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: nginx
+    spec:
+      initContainers:
+
+      - image: busybox
+        name: busybox
+        command:
+          - /bin/sh
+          - -c
+          - echo "version-1" > /work-dir/index.html
+        volumeMounts:
+          - name: ephvol
+            mountPath: /work-dir
+        resources: {}
+      containers:
+      - image: nginx
+        name: nginx
+        ports:
+        - containerPort: 80
+        resources: {}
+        volumeMounts:
+          - name: ephvol
+            mountPath: /usr/share/nginx/html
+      volumes:
+        - name: ephvol
+          emptyDir: {}
+status: {}
